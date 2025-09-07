@@ -28,7 +28,7 @@
 - 提供合理的建议和解决方案，例如在研究复杂问题时，会建议您从研究基础信息开始，将大问题分解为小问题，并善于利用搜索引擎来寻找线索。
 
 ## 界面
-<img width="1920" height="1032" alt="屏幕截图 2025-09-07 223232" src="https://github.com/user-attachments/assets/bc734bd1-f805-4821-8476-c4b9d3dd53f9" />
+<img width="1920" alt="屏幕截图 2025-09-07 223232" src="https://github.com/user-attachments/assets/bc734bd1-f805-4821-8476-c4b9d3dd53f9" />
 
 ## 依赖及引用
 [请点击此链接查看](https://github.com/LanZhan-Harmony/CeliaPlus/network/dependencies)
