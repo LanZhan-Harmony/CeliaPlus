@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "CeliaPlus (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "CeliaPlus (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
