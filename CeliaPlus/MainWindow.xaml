@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="using:CeliaPlus"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        Title="CeliaPlus"
+        Title="小艺+"
         mc:Ignorable="d">
 
     <Window.SystemBackdrop>
@@ -31,39 +31,44 @@
                                    Source="/Assets/AI/DeepSeek.png"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Copilot" Tag="Copilot">
+                <NavigationViewItem Content="Copilot" Tag="Copilot"
+                                    Visibility="{x:Bind IsHiddenItemsVisible, Mode=OneWay}">
                     <NavigationViewItem.Icon>
                         <ImageIcon Height="25"
                                    Margin="-5"
                                    Source="/Assets/AI/Copilot.png"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Gemini" Tag="Gemini">
+                <NavigationViewItem Content="Gemini" Tag="Gemini"
+                                    Visibility="{x:Bind IsHiddenItemsVisible, Mode=OneWay}">
                     <NavigationViewItem.Icon>
                         <ImageIcon Height="25"
                                    Margin="-5"
                                    Source="/Assets/AI/Gemini.png"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Google AI Studio" Tag="GoogleAIStudio">
+                <NavigationViewItem Content="Google AI Studio" Tag="GoogleAIStudio"
+                                    Visibility="{x:Bind IsHiddenItemsVisible, Mode=OneWay}">
                     <NavigationViewItem.Icon>
                         <ImageIcon Height="25"
                                    Margin="-5"
-                                   Source="/Assets/AI/GoogleAIStudio.png"/>
+                                   Source="{ThemeResource GoogleAIStudioImage}"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="ChatGPT" Tag="ChatGPT">
+                <NavigationViewItem Content="ChatGPT" Tag="ChatGPT"
+                                    Visibility="{x:Bind IsHiddenItemsVisible, Mode=OneWay}">
                     <NavigationViewItem.Icon>
                         <ImageIcon Height="25"
                                    Margin="-5"
-                                   Source="/Assets/AI/ChatGPT.png"/>
+                                   Source="{ThemeResource ChatGPTImage}"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Grok" Tag="Grok">
+                <NavigationViewItem Content="Grok" Tag="Grok"
+                                    Visibility="{x:Bind IsHiddenItemsVisible, Mode=OneWay}">
                     <NavigationViewItem.Icon>
                         <ImageIcon Height="25"
                                    Margin="-5"
-                                   Source="/Assets/AI/Grok.png"/>
+                                   Source="{ThemeResource GrokImage}"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="豆包" Tag="DouBao">
@@ -77,17 +82,18 @@
                     <NavigationViewItem.Icon>
                         <ImageIcon Height="25"
                                    Margin="-5"
-                                   Source="/Assets/AI/Kimi.png"/>
+                                   Source="{ThemeResource KimiImage}"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="千问" Tag="Qwen">
+                <NavigationViewItem Content="通义千问" Tag="Qwen">
                     <NavigationViewItem.Icon>
                         <ImageIcon Height="25"
                                    Margin="-5"
                                    Source="/Assets/AI/Qwen.png"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Claude" Tag="Claude">
+                <NavigationViewItem Content="Claude" Tag="Claude"
+                                    Visibility="{x:Bind IsHiddenItemsVisible, Mode=OneWay}">
                     <NavigationViewItem.Icon>
                         <ImageIcon Height="25"
                                    Margin="-5"

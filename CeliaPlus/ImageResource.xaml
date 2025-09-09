@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="using:CeliaPlus">
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <ImageSource x:Key="GoogleAIStudioImage">/Assets/AI/GoogleAIStudio-Light.png</ImageSource>
+            <ImageSource x:Key="ChatGPTImage">/Assets/AI/ChatGPT-Light.png</ImageSource>
+            <ImageSource x:Key="GrokImage">/Assets/AI/Grok-Light.png</ImageSource>
+            <ImageSource x:Key="KimiImage">/Assets/AI/Kimi-Light.png</ImageSource>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <ImageSource x:Key="GoogleAIStudioImage">/Assets/AI/GoogleAIStudio-Dark.png</ImageSource>
+            <ImageSource x:Key="ChatGPTImage">/Assets/AI/ChatGPT-Dark.png</ImageSource>
+            <ImageSource x:Key="GrokImage">/Assets/AI/Grok-Dark.png</ImageSource>
+            <ImageSource x:Key="KimiImage">/Assets/AI/Kimi-Dark.png</ImageSource>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

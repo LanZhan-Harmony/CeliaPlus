@@ -1,13 +1,20 @@
 using System;
 using System.ComponentModel;
+using System.IO;
 using CeliaPlus.Pages;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.Storage;
 
 namespace CeliaPlus;
 
 public sealed partial class MainWindow : Window, INotifyPropertyChanged
 {
+    // 连击检测字段
+    private readonly TimeSpan _celiaClickWindow = TimeSpan.FromSeconds(3);
+    private int _celiaClickCount = 0;
+    private DateTime _celiaFirstClickTime = DateTime.MinValue;
+
     public bool IsProgressRingActive
     {
         get;
@@ -18,9 +25,22 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         }
     } = false;
 
+    public Visibility IsHiddenItemsVisible
+    {
+        get;
+        set
+        {
+            field = value;
+            SaveToSettingAsync();
+            OnPropertyChanged(nameof(IsHiddenItemsVisible));
+        }
+    } = Visibility.Collapsed;
+
     public MainWindow()
     {
+        LoadFromSettingAsync();
         InitializeComponent();
+        AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         ExtendsContentIntoTitleBar = true;
         Data.MainWindow = this;
     }
@@ -46,6 +66,35 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         if (args.InvokedItemContainer is NavigationViewItem invokedItem)
         {
             var tag = $"{invokedItem.Tag}";
+
+            if (tag == "Celia")
+            {
+                var now = DateTime.UtcNow;
+                if (
+                    _celiaFirstClickTime == DateTime.MinValue
+                    || (now - _celiaFirstClickTime) > _celiaClickWindow
+                )
+                {
+                    _celiaFirstClickTime = now;
+                    _celiaClickCount = 1;
+                }
+                else
+                {
+                    _celiaClickCount++;
+                }
+
+                if (_celiaClickCount >= 5)
+                {
+                    IsHiddenItemsVisible =
+                        IsHiddenItemsVisible == Visibility.Visible
+                            ? Visibility.Collapsed
+                            : Visibility.Visible;
+                    // 重置计数
+                    _celiaClickCount = 0;
+                    _celiaFirstClickTime = DateTime.MinValue;
+                }
+            }
+
             var pageToNavigate = tag switch
             {
                 "Celia" => typeof(CeliaPage),
@@ -71,6 +120,24 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         if (NavFrame.CurrentSourcePageType != pageType)
         {
             NavFrame.Navigate(pageType);
+        }
+    }
+
+    private void SaveToSettingAsync()
+    {
+        var localSettings = ApplicationData.Current.LocalSettings;
+        localSettings.Values["IsHiddenItemsVisible"] = IsHiddenItemsVisible == Visibility.Visible;
+    }
+
+    private void LoadFromSettingAsync()
+    {
+        var localSettings = ApplicationData.Current.LocalSettings;
+        if (
+            localSettings.Values.TryGetValue("IsHiddenItemsVisible", out var value)
+            && value is bool isVisible
+        )
+        {
+            IsHiddenItemsVisible = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }
