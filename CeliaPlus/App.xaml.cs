@@ -6,6 +6,8 @@ public partial class App : Application
 {
     private Window? _window;
 
+    public static UIElement? AppTitlebar { get; set; }
+
     public App()
     {
         InitializeComponent();

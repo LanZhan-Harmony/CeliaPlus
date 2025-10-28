@@ -1,19 +1,45 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using CeliaPlus.Helpers;
 using CeliaPlus.Pages;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
+using Windows.UI.ViewManagement;
 
 namespace CeliaPlus;
 
 public sealed partial class MainWindow : Window, INotifyPropertyChanged
 {
-    // 连击检测字段
-    private readonly TimeSpan _celiaClickWindow = TimeSpan.FromSeconds(3);
-    private int _celiaClickCount = 0;
-    private DateTime _celiaFirstClickTime = DateTime.MinValue;
+    private readonly UISettings settings;
+
+    private static readonly Dictionary<string, Type> PageMap = new()
+    {
+        ["Celia"] = typeof(CeliaPage),
+        ["DeepSeek"] = typeof(DeepSeekPage),
+        ["Copilot"] = typeof(CopilotPage),
+        ["Gemini"] = typeof(GeminiPage),
+        ["GoogleAIStudio"] = typeof(GoogleAIStudioPage),
+        ["ChatGPT"] = typeof(ChatGPTPage),
+        ["Grok"] = typeof(GrokPage),
+        ["DouBao"] = typeof(DouBaoPage),
+        ["Kimi"] = typeof(KimiPage),
+        ["Qwen"] = typeof(QwenPage),
+        ["Claude"] = typeof(ClaudePage),
+        ["Settings"] = typeof(SettingsPage),
+    };
+
+    private string? CurrentPage
+    {
+        get;
+        set
+        {
+            field = value;
+            SaveToSettingAsync();
+        }
+    }
 
     public bool IsProgressRingActive
     {
@@ -31,7 +57,6 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         set
         {
             field = value;
-            SaveToSettingAsync();
             OnPropertyChanged(nameof(IsHiddenItemsVisible));
         }
     } = Visibility.Collapsed;
@@ -42,6 +67,9 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         InitializeComponent();
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         ExtendsContentIntoTitleBar = true;
+        settings = new UISettings();
+        settings.ColorValuesChanged += Settings_ColorValuesChanged;
+        ((FrameworkElement)Content).ActualThemeChanged += Window_ThemeChanged;
         Data.MainWindow = this;
     }
 
@@ -54,8 +82,9 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
 
     private void NavigationView_Loaded(object sender, RoutedEventArgs e)
     {
-        (sender as NavigationView)!.SelectedItem = (sender as NavigationView)!.MenuItems[0];
-        NavigateToPage(typeof(CeliaPage));
+        var pageToNavigate = GetPageTypeByTag(CurrentPage);
+        NavView.SelectedItem = FindMenuItemByTag(CurrentPage);
+        NavigateToPage(pageToNavigate);
     }
 
     private void NavigationView_ItemInvoked(
@@ -65,53 +94,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (args.InvokedItemContainer is NavigationViewItem invokedItem)
         {
-            var tag = $"{invokedItem.Tag}";
-
-            if (tag == "Celia")
-            {
-                var now = DateTime.UtcNow;
-                if (
-                    _celiaFirstClickTime == DateTime.MinValue
-                    || (now - _celiaFirstClickTime) > _celiaClickWindow
-                )
-                {
-                    _celiaFirstClickTime = now;
-                    _celiaClickCount = 1;
-                }
-                else
-                {
-                    _celiaClickCount++;
-                }
-
-                if (_celiaClickCount >= 5)
-                {
-                    IsHiddenItemsVisible =
-                        IsHiddenItemsVisible == Visibility.Visible
-                            ? Visibility.Collapsed
-                            : Visibility.Visible;
-                    // 重置计数
-                    _celiaClickCount = 0;
-                    _celiaFirstClickTime = DateTime.MinValue;
-                }
-            }
-
-            var pageToNavigate = tag switch
-            {
-                "Celia" => typeof(CeliaPage),
-                "DeepSeek" => typeof(DeepSeekPage),
-                "Copilot" => typeof(CopilotPage),
-                "Gemini" => typeof(GeminiPage),
-                "GoogleAIStudio" => typeof(GoogleAIStudioPage),
-                "ChatGPT" => typeof(ChatGPTPage),
-                "Grok" => typeof(GrokPage),
-                "DouBao" => typeof(DouBaoPage),
-                "Kimi" => typeof(KimiPage),
-                "Qwen" => typeof(QwenPage),
-                "Claude" => typeof(ClaudePage),
-                "Settings" => typeof(SettingsPage),
-                _ => typeof(CeliaPage),
-            };
-            NavigateToPage(pageToNavigate);
+            NavigateToPage(GetPageTypeByTag($"{invokedItem.Tag}"));
         }
     }
 
@@ -120,13 +103,50 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         if (NavFrame.CurrentSourcePageType != pageType)
         {
             NavFrame.Navigate(pageType);
+            CurrentPage = pageType.Name.Replace("Page", string.Empty);
         }
     }
 
-    private void SaveToSettingAsync()
+    private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
-        var localSettings = ApplicationData.Current.LocalSettings;
-        localSettings.Values["IsHiddenItemsVisible"] = IsHiddenItemsVisible == Visibility.Visible;
+        DispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
+    }
+
+    private void Window_ThemeChanged(FrameworkElement sender, object args)
+    {
+        TitleBarHelper.UpdateTitleBar(sender.ActualTheme);
+    }
+
+    private static Type GetPageTypeByTag(string? tag)
+    {
+        if (!string.IsNullOrEmpty(tag) && PageMap.TryGetValue(tag, out var type))
+        {
+            return type;
+        }
+        return typeof(CeliaPage);
+    }
+
+    private object? FindMenuItemByTag(string? tag)
+    {
+        if (string.IsNullOrEmpty(tag))
+        {
+            return NavView.MenuItems[0];
+        }
+        foreach (var item in NavView.MenuItems)
+        {
+            if (item is NavigationViewItem nvi && $"{nvi.Tag}" == tag)
+            {
+                return nvi;
+            }
+        }
+        foreach (var item in NavView.FooterMenuItems)
+        {
+            if (item is NavigationViewItem nvi && $"{nvi.Tag}" == tag)
+            {
+                return nvi;
+            }
+        }
+        return NavView.MenuItems[0];
     }
 
     private void LoadFromSettingAsync()
@@ -138,6 +158,22 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         )
         {
             IsHiddenItemsVisible = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (
+            localSettings.Values.TryGetValue("CurrentPage", out var pageValue)
+            && pageValue is string pageString
+        )
+        {
+            CurrentPage = pageString;
+        }
+    }
+
+    private void SaveToSettingAsync()
+    {
+        if (!string.IsNullOrEmpty(CurrentPage))
+        {
+            var localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values["CurrentPage"] = CurrentPage;
         }
     }
 }

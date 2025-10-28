@@ -5,7 +5,35 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="using:CeliaPlus.Pages"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
       mc:Ignorable="d">
 
-    <Grid/>
+    <StackPanel>
+        <TextBlock Margin="{StaticResource NavigationViewHeaderMargin}"
+                   Style="{StaticResource TitleLargeTextBlockStyle}"
+                   Text="设置"/>
+        <ScrollViewer>
+            <StackPanel Margin="56,32,56,0" Spacing="4">
+                <toolkit:SettingsCard Header="启用在中国大陆不可用的模型">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xF49A;"/>
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{x:Bind IsHiddenItemsVisible, Mode=TwoWay}"/>
+                </toolkit:SettingsCard>
+                <toolkit:SettingsExpander Description="© 2025 Untamed Corporation。保留所有权利。" Header="小艺+">
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind GetVersionDescription()}"/>
+                    <toolkit:SettingsExpander.HeaderIcon>
+                        <ImageIcon Source="/Assets/WindowIcon.ico"/>
+                    </toolkit:SettingsExpander.HeaderIcon>
+                    <toolkit:SettingsExpander.Items>
+                        <toolkit:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
+                            <HyperlinkButton Margin="-12,0,0,0"
+                                             Content="源代码"
+                                             NavigateUri="https://github.com/LanZhan-Harmony/CeliaPlus"/>
+                        </toolkit:SettingsCard>
+                    </toolkit:SettingsExpander.Items>
+                </toolkit:SettingsExpander>
+            </StackPanel>
+        </ScrollViewer>
+    </StackPanel>
 </Page>
